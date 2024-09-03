@@ -1,0 +1,84 @@
+#Code
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama.llms import OllamaLLM
+
+model = OllamaLLM(model="llama3")
+
+class bot():
+    
+    chain: OllamaLLM
+    template: ChatPromptTemplate
+    conversation: list[tuple]
+
+    def __init__(self):
+        self.conversation = []
+
+    def system(self, text):
+        template = ChatPromptTemplate([
+        ("system", text),
+        ("human","{user_input}")
+        ])
+        self.conversation = []
+        self.conversation.append(("system", text))
+        self.template = template
+
+
+    def bind(self):
+        self.chain = self.template | model
+    
+    def gen_out(self, text):
+        out = self.chain.invoke(text)
+        print(out, '\n')
+        self.conversation.append(("human", text))
+        self.conversation.append(("ai", out))
+
+    def get_conv(self):
+        for dialogue in cb1.conversation:
+            print(dialogue)
+
+cb1 = bot()
+#Can change prompts as required to fine tune chatbot
+sys_text = "You are a helpful AI assistant. You will only answer if your name 'Bob' is called, and in a breif and precise manner."
+
+cb1.system(sys_text)
+cb1.bind()
+cb1.gen_out("Hello Bob")
+cb1.get_conv()
+
+#output
+'''
+What can I help you with? 
+
+('system', "You are a helpful AI assistant. You will only answer if your name 'Bob' is called, and in a breif and precise manner.")
+('human', 'Hello Bob')
+('ai', 'What can I help you with?')
+'''
+
+#code
+sys_text = "Your task is to correct the grammar and sentence formation in the prompts given to you and suggest alternatives that would help the user in improving their writing."
+
+cb1.system(sys_text)
+cb1.bind()
+cb1.gen_out("The cat swiftly jumped over the fence, chasing a butterfly.")
+cb1.get_conv()
+
+#output
+'''
+The original prompt is already grammatically correct and makes sense. However, if I were to suggest an alternative, it could be:
+
+"As the cat watched, a butterfly fluttered just out of reach, prompting it to swiftly jump over the fence in hot pursuit."
+
+This revised sentence adds more detail and descriptive language, making it more engaging for the reader. The use of the phrase "just out of reach" creates a sense of tantalizing possibility, which adds to the cat's motivation to chase the butterfly.
+
+Other suggestions could include:
+
+* Adding sensory details to describe the scene, such as the sound of the cat's paws hitting the ground or the feeling of the sun on its fur.
+* Exploring the cat's thoughts and feelings through narrative voice, such as "The thrill of the chase sent my whiskers twitching with excitement."
+* Developing the butterfly's character by giving it a name or describing its appearance, creating a more vivid image in the reader's mind.
+
+Overall, while the original prompt is grammatically correct, adding more descriptive language and sensory details can help to create a more immersive experience for the reader. 
+
+('system', 'Your task is to correct the grammar and sentence formation in the prompts given to you and suggest alternatives that would help the user in improving their writing.')
+('human', 'The cat swiftly jumped over the fence, chasing a butterfly.')
+('ai', 'The original prompt is already grammatically correct and makes sense. However, if I were to suggest an alternative, it could be:\n\n"As the cat watched, a butterfly fluttered just out of reach, prompting it to swiftly jump over the fence in hot pursuit."\n\nThis revised sentence adds more detail and descriptive language, making it more engaging for the reader. The use of the phrase "just out of reach" creates a sense of tantalizing possibility, which adds to the cat\'s motivation to chase the butterfly.\n\nOther suggestions could include:\n\n* Adding sensory details to describe the scene, such as the sound of the cat\'s paws hitting the ground or the feeling of the sun on its fur.\n* Exploring the cat\'s thoughts and feelings through narrative voice, such as "The thrill of the chase sent my whiskers twitching with excitement."\n* Developing the butterfly\'s character by giving it a name or describing its appearance, creating a more vivid image in the reader\'s mind.\n\nOverall, while the original prompt is grammatically correct, adding more descriptive language and sensory details can help to create a more immersive experience for the reader.')
+'''
